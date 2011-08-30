@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # export EC2_HOME='/etc/ec2'  # Make sure you use the API tools, not the AMI tools
 # export EC2_BIN=$EC2_HOME/bin
@@ -7,13 +7,15 @@
 # I have captured all of the above in a particular file and lemme execute it
 source /etc/environment
 
+PURGE_SNAPSHOT_IN_DAYS=10
+
 EC2_BIN=$EC2_HOME/bin
 
 # store the certificates and private key to your amazon account
 MY_CERT='/path/to/certificate-file'
 MY_KEY='/path/to/private-file'
 # fetching the instance-id from the metadata repository
-MY_INSTANCE_ID='ec2-instance-id'
+MY_INSTANCE_ID='your ec2-instance-id'
 
 # temproary file
 TMP_FILE='/tmp/rock-ebs-info.txt'
@@ -41,4 +43,6 @@ echo "Process ended at $(date +%m-%d-%Y-%T)"
 echo ""
 
 rm -f $TMP_FILE
+
+#remove those snapshot which are $PURGE_SNAPSHOT_IN_DAYS old
 
