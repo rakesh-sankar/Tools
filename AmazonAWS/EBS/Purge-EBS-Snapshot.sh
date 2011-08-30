@@ -76,12 +76,12 @@ foreach ($snaps as $s) {
 // So here, we're going to turn the array inside out so we can sort on the volume
 // and the timestamp
 foreach ($snaps as $key => $row) {
-  $column1[$key] = ($row[0]) ? $row[0] : "";
-  $column2[$key] = ($row[1]) ? $row[1] : "";
-  $column3[$key] = ($row[2]) ? $row[2] : "";
-  $column4[$key] = ($row[3]) ? $row[3] : "";
-  $column5[$key] = ($row[4]) ? $row[4] : "";
-  $column6[$key] = ($row[5]) ? $row[5] : "";
+  $column1[$key] = isset($row[0]) ? $row[0] : "";
+  $column2[$key] = isset($row[1]) ? $row[1] : "";
+  $column3[$key] = isset($row[2]) ? $row[2] : "";
+  $column4[$key] = isset($row[3]) ? $row[3] : "";
+  $column5[$key] = isset($row[4]) ? $row[4] : "";
+  $column6[$key] = isset($row[5]) ? $row[5] : "";
 }
 
 // sort it
