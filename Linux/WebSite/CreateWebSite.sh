@@ -17,7 +17,7 @@ defaultSitePath="/var/www/vhosts/"
 website="$1.$defaultSite"
 
 # System variables
-apacheConf="/etc/httpd/conf.d/zz_costrategix.conf"
+apacheConf="/etc/httpd/conf.d/apache-vhost.conf"
 ownerName="rakesh"
 webserver="apache"
 
