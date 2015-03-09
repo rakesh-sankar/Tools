@@ -11,9 +11,28 @@ PURGE_SNAPSHOT_IN_DAYS=10
 
 EC2_BIN=$EC2_HOME/bin
 
-# store the certificates and private key to your amazon account
-MY_CERT='/path/to/certificate-file'
-MY_KEY='/path/to/private-file'
+# Make sure the IAM user has only permission to create/delete snapshot and read the ec2 instances.
+# The policy should look like this:
+#{
+#  "Version": "2012-10-17",
+#  "Statement": [
+#    {
+#      "Sid": "Stmt1425915805000",
+#      "Effect": "Allow",
+#      "Action": [
+#          "ec2:CreateSnapshot",
+#          "ec2:DeleteSnapshot",
+#          "ec2:DescribeInstances"
+#      ],
+#      "Resource": [
+#          "*"
+#      ]
+#    }
+#  ]
+#}
+
+MY_ACCESS='IAM-SPECIFIC-ACCESS-KEY'
+MY_SECRET='IAM-SPECIFIC-SECRETE-KEY'
 # fetching the instance-id from the metadata repository
 MY_INSTANCE_ID='your ec2-instance-id'
 
@@ -21,7 +40,7 @@ MY_INSTANCE_ID='your ec2-instance-id'
 TMP_FILE='/tmp/rock-ebs-info.txt'
 
 # get list of locally attached volumes via EC2 API:
-$EC2_BIN/ec2-describe-volumes -C $MY_CERT -K $MY_KEY > $TMP_FILE
+$EC2_BIN/ec2-describe-volumes -O $MY_ACCESS -W $MY_SECRET > $TMP_FILE
 VOLUME_LIST=$(cat $TMP_FILE | grep ${MY_INSTANCE_ID} | awk '{ print $2 }')
 
 sync
@@ -35,7 +54,7 @@ for volume in $(echo $VOLUME_LIST); do
    DESC=$NAME-$(date +%m-%d-%Y)
    echo "Creating Snapshot for the volume: $volume with description: $DESC"
    echo "Snapshot info below:"
-   $EC2_BIN/ec2-create-snapshot -C $MY_CERT -K $MY_KEY -d $DESC $volume
+   $EC2_BIN/ec2-create-snapshot -O $MY_ACCESS -W $MY_SECRET -d $DESC $volume
    echo ""
 done
 
@@ -45,4 +64,3 @@ echo ""
 rm -f $TMP_FILE
 
 #remove those snapshot which are $PURGE_SNAPSHOT_IN_DAYS old
-

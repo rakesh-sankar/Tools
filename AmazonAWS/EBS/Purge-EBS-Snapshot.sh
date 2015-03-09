@@ -13,9 +13,29 @@
 //    http://www.techkismet.com/systems-admin/automating-ec2-ebs-snapshot-cleanup.html
 
 
+# Make sure the IAM user has only permission to create/delete snapshot and read the ec2 instances.
+# The policy should look like this:
+#{
+#  "Version": "2012-10-17",
+#  "Statement": [
+#    {
+#      "Sid": "Stmt1425915805000",
+#      "Effect": "Allow",
+#      "Action": [
+#          "ec2:CreateSnapshot",
+#          "ec2:DeleteSnapshot",
+#          "ec2:DescribeInstances"
+#      ],
+#      "Resource": [
+#          "*"
+#      ]
+#    }
+#  ]
+#}
+
 // PUT AWS VARIABLES HERE
-define('AWS_ACCESS_KEY', '/home/path/pk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.pem');
-define('AWS_SECRET_ACCESS_CERT', '/home/path/cert-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.pem');
+define('AWS_ACCESS_KEY', 'IAM-SPECIFIC-ACCESS-KEY');
+define('AWS_SECRET_ACCESS_CERT', 'IAM-SPECIFIC-SECRETE-KEY');
 
 // Set debug
 $debug = false;
@@ -54,8 +74,8 @@ if ($debug)
 
 // Get a list of the snapshots
 $out = array();
-#$cmd = 'ec2-describe-snapshots -K ' . AWS_ACCESS_KEY  . ' -C ' . AWS_SECRET_ACCESS_CERT . ' --region ' . AWS_REGION;
-$cmd = 'ec2-describe-snapshots -K ' . AWS_ACCESS_KEY  . ' -C ' . AWS_SECRET_ACCESS_CERT;
+
+$cmd = 'ec2-describe-snapshots -O ' . AWS_ACCESS_KEY  . ' -W ' . AWS_SECRET_ACCESS_CERT;
 exec($cmd, $out);
 
 // Store each snapshot in it's own array element
@@ -145,8 +165,7 @@ foreach ($volumes_to_prune as $volume_id) {
           // Delete the snapshot, and print the output from the ec2-delete-snapshot command
           print "** INFO: Deleting: $volume_id/ $s\n";
           $out = array();
-#          $cmd = 'ec2-delete-snapshot -K ' . AWS_ACCESS_KEY  . ' -C ' . AWS_SECRET_ACCESS_CERT . ' --region ' . AWS_REGION . ' ' . $s;
-          $cmd = 'ec2-delete-snapshot -K ' . AWS_ACCESS_KEY  . ' -C ' . AWS_SECRET_ACCESS_CERT . ' ' . $s;
+          $cmd = 'ec2-delete-snapshot -O ' . AWS_ACCESS_KEY  . ' -W ' . AWS_SECRET_ACCESS_CERT . ' ' . $s;
           exec($cmd, $out);
           print "** INFO: Output from command $cmd: \n";
           foreach ($out as $o) {
